@@ -7,11 +7,13 @@ var exec = require('child_process').exec;
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
+var output = '';
 var child;
 // executes `pwd`
 child = exec("javac -version", function (error, stdout, stderr) {
   console.log('stdout: ' + stdout);
   console.log('stderr: ' + stderr);
+  output = stderr;
   if (error !== null) {
     console.log('exec error: ' + error);
   }
