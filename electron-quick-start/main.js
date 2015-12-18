@@ -2,22 +2,12 @@
 const electron = require('electron');
 const app = electron.app;  // Module to control application life.
 const BrowserWindow = electron.BrowserWindow;  // Module to create native browser window.
-var exec = require('child_process').exec;
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
-var output = '';
-var child;
-// executes `pwd`
-child = exec("javac -version", function (error, stdout, stderr) {
-  console.log('stdout: ' + stdout);
-  console.log('stderr: ' + stderr);
-  output = stderr;
-  if (error !== null) {
-    console.log('exec error: ' + error);
-  }
-});
+
 // Quit when all windows are closed.
 app.on('window-all-closed', function() {
   // On OS X it is common for applications and their menu bar
@@ -35,7 +25,7 @@ app.on('ready', function() {
 
   // and load the index.html of the app.
   mainWindow.loadURL('file://' + __dirname + '/index.html');
-
+  mainWindow.o
   // Open the DevTools.
 
   // Emitted when the window is closed.
