@@ -1,0 +1,24 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'start' ]
+2 info using npm@2.14.7
+3 info using node@v4.2.2
+4 verbose run-script [ 'prestart', 'start', 'poststart' ]
+5 info prestart cs-points@1.0.0
+6 info start cs-points@1.0.0
+7 verbose unsafe-perm in lifecycle true
+8 verbose stack Error: write EPIPE
+8 verbose stack     at Object.exports._errnoException (util.js:874:11)
+8 verbose stack     at exports._exceptionWithHostPort (util.js:897:20)
+8 verbose stack     at WriteWrap.afterWrite (net.js:763:14)
+9 verbose cwd /Users/binu/Documents/cs-points/electron-quick-start
+10 error Darwin 15.0.0
+11 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "start"
+12 error node v4.2.2
+13 error npm  v2.14.7
+14 error code EPIPE
+15 error errno EPIPE
+16 error syscall write
+17 error write EPIPE
+18 error If you need help, you may report this error at:
+18 error     <https://github.com/npm/npm/issues>
+19 verbose exit [ 1, true ]
