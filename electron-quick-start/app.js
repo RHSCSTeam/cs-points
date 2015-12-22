@@ -3,6 +3,7 @@ var express = require('express');
 var fs = require('fs');
 var request = require('request');
 var cheerio = require('cheerio');
+var toastr = require("toastr"); 
 var output = '';
 var child;
 if(process.platform == "darwin"){
@@ -26,7 +27,7 @@ function addProblem(override){
 	}
 	console.log(url);
 	if(url.search("uva.onlinejudge") == -1){
-		alert("Invalid URL");
+		toastr.error("Invalid URL");
 	}else{
 		console.log(url);
 		request(url, function(error, response, html){
@@ -38,27 +39,49 @@ function addProblem(override){
 				  name = DOM(this).text();
 				  name = name.trim();
 				});
-
+				iframeURL = DOM("iframe").attr("src");
+				resultsURL = DOM("a[target=_new]").attr("href");
 				name = name.split('\t');
 				time = name[2];
 				name = name[0];
-
+				var id = makeid();
+				paramId = "'" + id + "'";
 				console.log(name,time);
-				if(name == "Display #" && name == ""){
-					alert("Invalid Page");
+				if(name == "Display #" && time == ""){
+					toastr.error("Invalid Page");
 				}else{
-					$("#added").append('<button type="button" class="list-group-item">'+name+'</button>');
+					$("#added").append('<button type="button" class="list-group-item" id="'+id+'" name="'+name+'"time="'+time+'" iframeURL='+iframeURL+' resultsURL="'+resultsURL+'"onclick="viewProblem('+paramId+')">'+name+'</button>');
+
 				}
 			}else{
-				alert("Couldn't load URL");
+				toastr.error("Couldn't load URL");
 			}
 		});
 	}
 }
-
+function viewProblem(id){
+	id = '#' + id;
+	var name = $(id).attr("name");
+	var time = $(id).attr("time");
+	console.log(name,time);
+	var iframeURL = $(id).attr("iframeURL");
+	var resultsURL = $(id).attr("resultsURL");
+	$("#title").text(name);
+	$('#timelimit').text(time);
+}
 function loadEVERYTHING(){
 //Might Accidently DDos UVa if used. so be careful.
 	for(var x = 1; x <= 1000; x++){
 		addProblem(("https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=3&page=show_problem&problem=" + x).toString());
 	}
+}
+function makeid()
+{
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for( var i=0; i < 5; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
 }

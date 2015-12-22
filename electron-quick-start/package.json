@@ -16,12 +16,13 @@
   "bugs": {
     "url": "https://github.com/rhscsteam/cs-points/issues"
   },
-  "dependencies" : {
-    "bootstrap" : "*",
+  "dependencies": {
+    "bootstrap": "*",
     "cheerio": "*",
     "express": "*",
     "jquery": "*",
-    "request": "*"
+    "request": "*",
+    "toastr": "^2.1.2"
   },
   "homepage": "https://rhscsteam.github.io/",
   "devDependencies": {
