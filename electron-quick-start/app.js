@@ -5,7 +5,9 @@ var request = require('request');
 var cheerio = require('cheerio');
 var output = '';
 var child;
-// executes `pwd`
+if(process.platform == "darwin"){
+	$(".macNav").addClass("mac");
+}
 function execTerminal(){
 	child = exec("npm -version", function (error, stdout, stderr) {
 	  console.log('stdout: ' + stdout);
