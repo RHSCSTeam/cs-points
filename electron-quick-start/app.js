@@ -19,10 +19,13 @@ function execTerminal(){
 	  }
 	});
 }
-function addProblem(){
+function addProblem(override){
 	url = document.getElementById("url").value;
-	console.log(url.search("uva.onlinjudge.org"));
-	if(url.search("onlinejudge") == -1){
+	if(override != ''){
+		url = override;
+	}
+	console.log(url);
+	if(url.search("uva.onlinejudge") == -1){
 		alert("Invalid URL");
 	}else{
 		console.log(url);
@@ -39,8 +42,13 @@ function addProblem(){
 				name = name.split('\t');
 				time = name[2];
 				name = name[0];
+
 				console.log(name,time);
-				$("#added").append('<button type="button" class="list-group-item">'+name+'</button>');
+				if(name == "Display #" && name == ""){
+					alert("Invalid Page");
+				}else{
+					$("#added").append('<button type="button" class="list-group-item">'+name+'</button>');
+				}
 			}else{
 				alert("Couldn't load URL");
 			}
@@ -48,3 +56,9 @@ function addProblem(){
 	}
 }
 
+function loadEVERYTHING(){
+//Might Accidently DDos UVa if used. so be careful.
+	for(var x = 1; x <= 1000; x++){
+		addProblem(("https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=3&page=show_problem&problem=" + x).toString());
+	}
+}
