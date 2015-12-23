@@ -6,8 +6,14 @@ var cheerio = require('cheerio');
 var toastr = require("toastr"); 
 var output = '';
 var child;
+var addedProblems = [];
 if(process.platform == "darwin"){
 	$(".macNav").addClass("mac");
+}
+if(localStorage.getItem("addedProblems") != null){
+	var x = localStorage.getItem("addedProblems");
+	$("#added").append(x.replace(",",""));
+	addedProblems = x.split(",");
 }
 function execTerminal(){
 	child = exec("npm -version", function (error, stdout, stderr) {
@@ -46,12 +52,15 @@ function addProblem(override){
 				name = name[0];
 				var id = makeid();
 				paramId = "'" + id + "'";
+				var appen = '<button type="button" class="list-group-item" id="'+id+'" name="'+name+'"time="'+time+'" url="'+url+'" iframeURL='+iframeURL+' resultsURL="'+resultsURL+'"onclick="viewProblem('+paramId+')">'+name+'</button>';
+				
 				console.log(name,time);
 				if(name == "Display #" && time == ""){
 					toastr.error("Invalid Page");
 				}else{
-					$("#added").append('<button type="button" class="list-group-item" id="'+id+'" name="'+name+'"time="'+time+'" url="'+url+'" iframeURL='+iframeURL+' resultsURL="'+resultsURL+'"onclick="viewProblem('+paramId+')">'+name+'</button>');
-
+					$("#added").append(appen);
+					addedProblems.push(appen);
+					localStorage.setItem("addedProblems",addedProblems.toString());
 				}
 			}else{
 				toastr.error("Couldn't load URL");
@@ -64,7 +73,6 @@ function viewProblem(id){
 	var name = $(id).attr("name");
 	var time = $(id).attr("time");
 	var url = $(id).attr("url");
-	alert(url);
 	console.log(name,time);
 	var iframeURL = $(id).attr("iframeURL");
 	var resultsURL = $(id).attr("resultsURL");
@@ -77,20 +85,35 @@ function viewProblem(id){
 }
 function loadInfo(url,id){
 	if($(id).hasClass("active") == false){
-
-		$(".list-group-item.active").removeClass("active");
-		$(id).addClass("active");
-		request(url, function(error, response, html){
-			if(!error){
-				$("#mainView").empty();
-				var Dm = cheerio.load(html);
-				newHTML = Dm("body").html();
-				console.log(newHTML);
-				$("#mainView").append(newHTML);
-			}else{
-				toastr.error("Couldn't load info");
-			}
-		});
+		if(sessionStorage.getItem(id) == null){
+			$(".list-group-item.active").removeClass("active");
+			$(id).addClass("active");
+			request(url, function(error, response, html){
+				if(!error){
+					$("#mainView").empty();
+					var Dm = cheerio.load(html);
+					Dm("img").each(function(i,elem){
+						x = Dm(this).attr("src");
+						Dm(this).attr("src",url.substring(0,39)+ x);
+					});
+					newHTML = Dm("body").html();
+					if(newHTML === null){
+						
+						$("#mainView").append('<h2>Unable to get details. Go to the site via another a browser</h2><p>Link: '+url+'</p>');
+					}else{
+						$("#mainView").append(newHTML);
+						sessionStorage.setItem(id,newHTML);
+					}
+				}else{
+					toastr.error("Couldn't load info");
+				}
+			});
+		}else{
+			$("#mainView").empty();
+			$(".list-group-item.active").removeClass("active");
+			$(id).addClass("active");
+			$("#mainView").append(sessionStorage.getItem(id));
+		}
 	}
 }
 function loadEVERYTHING(){
