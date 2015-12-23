@@ -120,6 +120,7 @@
           <h4 class="modal-title" id="myModalLabel">Add Practice Problem</h4>
         </div>
         <div class="modal-body">
+          <p>Copy and paste the UVa Problem url here.</p>
           <input type="url" id="url" name="fname">
         </div>
         <div class="modal-footer">
@@ -128,6 +129,23 @@
       </div>
     </div>
   </div>
+      <div class="modal fade" id="submitAnswer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">Submit your answer</h4>
+        </div>
+        <div class="modal-body">
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="addProblem('')" data-dismiss="modal">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
     <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"><\/script>')</script>
     <script src="bootstrap.min.js"></script>

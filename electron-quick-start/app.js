@@ -6,14 +6,18 @@ var cheerio = require('cheerio');
 var toastr = require("toastr"); 
 var output = '';
 var child;
+//https://docs.google.com/forms/d/1G71c5d93HVMulv3gmBKC_EAHYvH_cbJC62Xl07csuoA/viewform?entry.1100317659=NAME&entry.445550013=PROBLEMNAME&entry.1833306606=PROBLEMURL&entry.1141395298
 var addedProblems = [];
 if(process.platform == "darwin"){
 	$(".macNav").addClass("mac");
 }
 if(localStorage.getItem("addedProblems") != null){
 	var x = localStorage.getItem("addedProblems");
-	$("#added").append(x.replace(",",""));
 	addedProblems = x.split(",");
+	for(i=0;i<=addedProblems.length;i++){
+		$("#added").append(addedProblems[i]);
+	}
+
 }
 function execTerminal(){
 	child = exec("npm -version", function (error, stdout, stderr) {
@@ -88,6 +92,7 @@ function loadInfo(url,id){
 		if(sessionStorage.getItem(id) == null){
 			$(".list-group-item.active").removeClass("active");
 			$(id).addClass("active");
+			$("#mainView").empty().append("Loading");
 			request(url, function(error, response, html){
 				if(!error){
 					$("#mainView").empty();
@@ -100,6 +105,7 @@ function loadInfo(url,id){
 					if(newHTML === null){
 						
 						$("#mainView").append('<h2>Unable to get details. Go to the site via another a browser</h2><p>Link: '+url+'</p>');
+						sessionStorage.setItem(id,'<h2>Unable to get details. Go to the site via another a browser</h2><p>Link: '+url+'</p>');
 					}else{
 						$("#mainView").append(newHTML);
 						sessionStorage.setItem(id,newHTML);
@@ -131,4 +137,16 @@ function makeid()
         text += possible.charAt(Math.floor(Math.random() * possible.length));
 
     return text;
+}
+function solvedSolution(name,problemName,problemURL){
+	//google forms response
+	url = 'https://docs.google.com/forms/d/1G71c5d93HVMulv3gmBKC_EAHYvH_cbJC62Xl07csuoA/formResponse?entry.1100317659='+name+'&entry.445550013='+problemName+'&entry.1833306606='+problemURL+'&entry.1141395298';
+	request.post(url, function(error, response, html){
+		if(!error){
+			toastr.success("Problem Solved");
+			console.log(response);
+		}else{
+			toastr.error("Error");
+		}
+	});
 }
