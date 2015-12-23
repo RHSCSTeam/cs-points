@@ -6,6 +6,7 @@ var cheerio = require('cheerio');
 var toastr = require("toastr"); 
 var output = '';
 var child;
+//https://docs.google.com/forms/d/1G71c5d93HVMulv3gmBKC_EAHYvH_cbJC62Xl07csuoA/viewform?entry.1100317659=NAME&entry.445550013=PROBLEMNAME&entry.1833306606=PROBLEMURL&entry.1141395298
 var addedProblems = [];
 if(process.platform == "darwin"){
 	$(".macNav").addClass("mac");
@@ -93,8 +94,8 @@ function loadInfo(url,id){
 			$(id).addClass("active");
 			$("#mainView").empty().append("Loading");
 			request(url, function(error, response, html){
-				$("#mainView").empty();
 				if(!error){
+					$("#mainView").empty();
 					var Dm = cheerio.load(html);
 					Dm("img").each(function(i,elem){
 						x = Dm(this).attr("src");
@@ -136,4 +137,16 @@ function makeid()
         text += possible.charAt(Math.floor(Math.random() * possible.length));
 
     return text;
+}
+function solvedSolution(name,problemName,problemURL){
+	//google forms response
+	url = 'https://docs.google.com/forms/d/1G71c5d93HVMulv3gmBKC_EAHYvH_cbJC62Xl07csuoA/formResponse?entry.1100317659='+name+'&entry.445550013='+problemName+'&entry.1833306606='+problemURL+'&entry.1141395298';
+	request.post(url, function(error, response, html){
+		if(!error){
+			toastr.success("Problem Solved");
+			console.log(response);
+		}else{
+			toastr.error("Error");
+		}
+	});
 }
