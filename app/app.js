@@ -4,8 +4,12 @@ var fs = require('fs');
 var request = require('request');
 var cheerio = require('cheerio');
 var toastr = require("toastr"); 
+var remote = require('remote'); 
+var dialog = remote.require('dialog'); 
+var path = require('path');
 var output = '';
 var child;
+
 //https://docs.google.com/forms/d/1G71c5d93HVMulv3gmBKC_EAHYvH_cbJC62Xl07csuoA/viewform?entry.1100317659=NAME&entry.445550013=PROBLEMNAME&entry.1833306606=PROBLEMURL&entry.1141395298
 var addedProblems = [];
 if(process.platform == "darwin"){
@@ -19,15 +23,15 @@ if(localStorage.getItem("addedProblems") != null){
 	}
 
 }
-function execTerminal(){
-	child = exec("npm -version", function (error, stdout, stderr) {
+function execTerminal(command){
+	child = exec(command, function (error, stdout, stderr) {
 	  console.log('stdout: ' + stdout);
 	  console.log('stderr: ' + stderr);
 	  output = stdout;
-	  document.getElementById("test").innerHTML = output;
 	  if (error !== null) {
-	    console.log('exec error: ' + error);
+	    toastr.error('exec error: ' + error);
 	  }
+	  return stdout;
 	});
 }
 function addProblem(override){
@@ -149,4 +153,28 @@ function solvedSolution(name,problemName,problemURL){
 			toastr.error("Error");
 		}
 	});
+}
+function openFile () {
+	dialog.showOpenDialog(function (filePath) {
+		var index = filePath[0].lastIndexOf("/");
+		var fp = filePath[0].substring(0,index);
+		var filename = filePath[0].substring(index+1, filePath[0].length-6);
+
+		fs.writeFile(fp+"/TestCases.txt", "Testing", function(err) {
+		    if(err) {
+		        return console.log(err);
+		    }
+		    exec('java '+ filename,{cwd:filePath[0].substring(0,index)}, function (error, stdout, stderr) {
+				if (error !== null) {
+					toastr.error('exec error: ' + error);
+					console.log('exec error: ' + error);
+				}
+				console.log('java '+ filename);
+				$("#terminal").append("> " + 'java '+ filename + '<br><br>');
+				$("#terminal").append(stdout);
+			});
+		}); 
+		
+
+	}); 
 }

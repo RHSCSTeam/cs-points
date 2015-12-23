@@ -79,7 +79,7 @@
           <h2 id='title'></h2>
           <h5 id='timelimit'></h5>
           <a href='' id='link' target="_blank">View link in browser</a>
-          <button class="btn btn-primary btn-block" style='margin-top:10px;'>Submit your solution</button>
+          <button class="btn btn-primary btn-block" style='margin-top:10px;' data-toggle="modal" data-target="#submitAnswer">Submit your solution</button>
           <div>
             <style type="text/css">
             h2{
@@ -129,18 +129,28 @@
       </div>
     </div>
   </div>
-      <div class="modal fade" id="submitAnswer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
+      <div class="modal bs-example-modal-lg fade" id="submitAnswer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myModalLabel">Submit your answer</h4>
+          <h4 class="modal-title" id="myModalLabel">Submit your solution</h4>
         </div>
         <div class="modal-body">
-          
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" onclick="addProblem('')" data-dismiss="modal">Save</button>
+        <div class="row">
+          <div class="col-md-6">
+            <h2>Step 1: Make sure your read a file called "TestCases.txt"</h2>
+            <pre>File file = new File("TestCases.txt");</pre>
+            <h2>Step 2: Add your main .class file</h2>
+            <button class="btn btn-primary" onclick="openFile();">Add file and run</button>
+          </div>
+          <div class="col-md-6">
+            <div class="well" id='status'>
+
+            </div>
+            <pre id="terminal" style="overflow:auto;height:300px;"></pre>
+          </div>
+          </div>
         </div>
       </div>
     </div>
