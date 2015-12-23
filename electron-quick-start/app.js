@@ -95,7 +95,7 @@ function loadInfo(url,id){
 }
 function loadEVERYTHING(){
 //Might Accidently DDos UVa if used. so be careful.
-	for(var x = 1; x <= 1000; x++){
+	for(var x = 35; x <= 50; x++){
 		addProblem(("https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=3&page=show_problem&problem=" + x).toString());
 	}
 }
