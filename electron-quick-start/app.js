@@ -50,7 +50,7 @@ function addProblem(override){
 				if(name == "Display #" && time == ""){
 					toastr.error("Invalid Page");
 				}else{
-					$("#added").append('<button type="button" class="list-group-item" id="'+id+'" name="'+name+'"time="'+time+'" iframeURL='+iframeURL+' resultsURL="'+resultsURL+'"onclick="viewProblem('+paramId+')">'+name+'</button>');
+					$("#added").append('<button type="button" class="list-group-item" id="'+id+'" name="'+name+'"time="'+time+'" url="'+url+'" iframeURL='+iframeURL+' resultsURL="'+resultsURL+'"onclick="viewProblem('+paramId+')">'+name+'</button>');
 
 				}
 			}else{
@@ -63,11 +63,35 @@ function viewProblem(id){
 	id = '#' + id;
 	var name = $(id).attr("name");
 	var time = $(id).attr("time");
+	var url = $(id).attr("url");
+	alert(url);
 	console.log(name,time);
 	var iframeURL = $(id).attr("iframeURL");
 	var resultsURL = $(id).attr("resultsURL");
 	$("#title").text(name);
 	$('#timelimit').text(time);
+	$('#link').attr("href", url);
+	console.log(iframeURL);
+
+	loadInfo("https://uva.onlinejudge.org/"+iframeURL,id);
+}
+function loadInfo(url,id){
+	if($(id).hasClass("active") == false){
+
+		$(".list-group-item.active").removeClass("active");
+		$(id).addClass("active");
+		request(url, function(error, response, html){
+			if(!error){
+				$("#mainView").empty();
+				var Dm = cheerio.load(html);
+				newHTML = Dm("body").html();
+				console.log(newHTML);
+				$("#mainView").append(newHTML);
+			}else{
+				toastr.error("Couldn't load info");
+			}
+		});
+	}
 }
 function loadEVERYTHING(){
 //Might Accidently DDos UVa if used. so be careful.
