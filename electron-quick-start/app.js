@@ -12,8 +12,11 @@ if(process.platform == "darwin"){
 }
 if(localStorage.getItem("addedProblems") != null){
 	var x = localStorage.getItem("addedProblems");
-	$("#added").append(x.replace(",",""));
 	addedProblems = x.split(",");
+	for(i=0;i<=addedProblems.length;i++){
+		$("#added").append(addedProblems[i]);
+	}
+
 }
 function execTerminal(){
 	child = exec("npm -version", function (error, stdout, stderr) {
@@ -88,9 +91,10 @@ function loadInfo(url,id){
 		if(sessionStorage.getItem(id) == null){
 			$(".list-group-item.active").removeClass("active");
 			$(id).addClass("active");
+			$("#mainView").empty().append("Loading");
 			request(url, function(error, response, html){
+				$("#mainView").empty();
 				if(!error){
-					$("#mainView").empty();
 					var Dm = cheerio.load(html);
 					Dm("img").each(function(i,elem){
 						x = Dm(this).attr("src");
@@ -100,6 +104,7 @@ function loadInfo(url,id){
 					if(newHTML === null){
 						
 						$("#mainView").append('<h2>Unable to get details. Go to the site via another a browser</h2><p>Link: '+url+'</p>');
+						sessionStorage.setItem(id,'<h2>Unable to get details. Go to the site via another a browser</h2><p>Link: '+url+'</p>');
 					}else{
 						$("#mainView").append(newHTML);
 						sessionStorage.setItem(id,newHTML);
