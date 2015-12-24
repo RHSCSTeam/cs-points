@@ -145,9 +145,6 @@
             <button class="btn btn-primary" onclick="openFile();">Add file and run</button>
           </div>
           <div class="col-md-6">
-            <div class="well" >
-              Status: <span id='status'></span>
-            </div>
             <pre id="terminal" style="overflow:auto;height:300px;"></pre>
           </div>
           </div>
@@ -155,7 +152,8 @@
       </div>
     </div>
   </div>
-
+  <div id='loader'>
+  </div>
     <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"><\/script>')</script>
     <script src="bootstrap.min.js"></script>

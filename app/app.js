@@ -169,24 +169,18 @@ function openFile () {
 			form_id = DOM("input[name='form_id']").attr("value");
 			var random_data;
 			var formData;
+			var input;
+			var output;
 
 			request.post("https://www.udebug.com/get-random-critical-input/random/" + problem_nid, function(error, response, html){
 				if(!error){
-					random_data = html;
+					random_data = encodeURIComponent(html);
 				}else{
 					toastr.error("Error");
 				}
-				formData = {
-					input_data: encodeURI(random_data),
-					problem_nid: problem_nid,
-					node_nid:'',
-					form_build_id:form_build_id,
-					form_id:form_id,
-					op:'Go!'
-				};
-				data = "input_data="+random_data+"&problem_nid="+problem_nid+"&node_nid=&form_build_id="+form_build_id+"&form_id="+form_id+"&op=Go!";
-				data = encodeURI(data).replace(/%20/g, '+').replace(/%22/g, '').replace(/%5Cr/g, '%0D').replace(/%5Cn/g, '%0A').replace(/!/g, '%21');
-				console.log(data);
+				data = "input_data="+random_data+"&problem_nid="+problem_nid+"&node_nid=&form_build_id=form-YAKY23vf6NyGi41C1Rx1YltzXhc40raY31gPD--5qBA&form_id=udebug_custom_problem_view_input_output_form&op=Go%21";
+				data = data.replace(/%20/g, '+').replace(/%22/g, '').replace(/%5Cr/g, '%0D').replace(/%5Cn/g, '%0A').replace(/!/g, '%21');
+//input_data=6&problem_nid=1041&node_nid=&form_build_id=form-YAKY23vf6NyGi41C1Rx1YltzXhc40raY31gPD--5qBA&form_id=udebug_custom_problem_view_input_output_form&op=Go%21
 				var contentLength = data.length;
 				request({
 				    headers: {
@@ -197,7 +191,31 @@ function openFile () {
 				    body: data,
 				    method: 'POST'
 				}, function (err, res, body) {
-					console.log(res);  	
+					var Out = cheerio.load(body);
+					input = Out("textarea").text();
+					output = Out("#output-data-inner").text();
+					console.log(input);
+					console.log(output);
+					dialog.showOpenDialog(function (filePath) {
+						var index = filePath[0].lastIndexOf("/");
+						var fp = filePath[0].substring(0,index);
+						var filename = filePath[0].substring(index+1, filePath[0].length-6);
+
+						fs.writeFile(fp+"/TestCases.txt", input, function(err) {
+						    if(err) {
+						        return console.log(err);
+						    }
+						    exec('java '+ filename,{cwd:filePath[0].substring(0,index)}, function (error, stdout, stderr) {
+								if (error !== null) {
+									toastr.error('exec error: ' + error);
+									console.log('exec error: ' + error);
+								}
+								console.log('java '+ filename);
+								$("#terminal").append("> " + 'java '+ filename + '<br><br>');
+								$("#terminal").append(stdout);
+							});
+						}); 
+					}); 	
 				});
 			});
 
@@ -207,26 +225,5 @@ function openFile () {
 		}
 	});
 
-	dialog.showOpenDialog(function (filePath) {
-		var index = filePath[0].lastIndexOf("/");
-		var fp = filePath[0].substring(0,index);
-		var filename = filePath[0].substring(index+1, filePath[0].length-6);
 
-		fs.writeFile(fp+"/TestCases.txt", "Testing", function(err) {
-		    if(err) {
-		        return console.log(err);
-		    }
-		    exec('java '+ filename,{cwd:filePath[0].substring(0,index)}, function (error, stdout, stderr) {
-				if (error !== null) {
-					toastr.error('exec error: ' + error);
-					console.log('exec error: ' + error);
-				}
-				console.log('java '+ filename);
-				$("#terminal").append("> " + 'java '+ filename + '<br><br>');
-				$("#terminal").append(stdout);
-			});
-		}); 
-		
-
-	}); 
 }
