@@ -4,6 +4,7 @@ var fs = require('fs');
 var request = require('request');
 var cheerio = require('cheerio');
 var toastr = require("toastr"); 
+var querystring = require('querystring');
 var remote = require('remote'); 
 var dialog = remote.require('dialog'); 
 var path = require('path');
@@ -107,10 +108,11 @@ function loadInfo(url,id){
 					});
 					newHTML = Dm("body").html();
 					if(newHTML === null){
-						
+						$("#mainView").append('<button class="btn btn-primary btn-block" id="readyToSubmit" openProblem="'+id.substring(1,id.length)+'" style="margin-top:10px;" data-toggle="modal" data-target="#submitAnswer">Submit your solution</button>');
 						$("#mainView").append('<h2>Unable to get details. Go to the site via another a browser</h2><p>Link: '+url+'</p>');
 						sessionStorage.setItem(id,'<h2>Unable to get details. Go to the site via another a browser</h2><p>Link: '+url+'</p>');
 					}else{
+						$("#mainView").append('<button class="btn btn-primary btn-block" id="readyToSubmit" openProblem="'+id.substring(1,id.length)+'" style="margin-top:10px;" data-toggle="modal" data-target="#submitAnswer">Submit your solution</button>');
 						$("#mainView").append(newHTML);
 						sessionStorage.setItem(id,newHTML);
 					}
@@ -155,6 +157,56 @@ function solvedSolution(name,problemName,problemURL){
 	});
 }
 function openFile () {
+	var id = $("#readyToSubmit").attr("openProblem");
+	var resultsURL = $("#" + id).attr("name").split("-");
+	resultsURL = "https://www.udebug.com/UVa/" + resultsURL[0].trim();
+	console.log(resultsURL);
+	request(resultsURL, function(error, response, html){
+		if(!error){
+			var DOM = cheerio.load(html);
+			problem_nid = DOM("input[name='problem_nid']").attr("value");
+			form_build_id = DOM("input[name='form_build_id']").attr("value");
+			form_id = DOM("input[name='form_id']").attr("value");
+			var random_data;
+			var formData;
+
+			request.post("https://www.udebug.com/get-random-critical-input/random/" + problem_nid, function(error, response, html){
+				if(!error){
+					random_data = html;
+				}else{
+					toastr.error("Error");
+				}
+				formData = {
+					input_data: encodeURI(random_data),
+					problem_nid: problem_nid,
+					node_nid:'',
+					form_build_id:form_build_id,
+					form_id:form_id,
+					op:'Go!'
+				};
+				data = "input_data="+random_data+"&problem_nid="+problem_nid+"&node_nid=&form_build_id="+form_build_id+"&form_id="+form_id+"&op=Go!";
+				data = encodeURI(data).replace(/%20/g, '+').replace(/%22/g, '').replace(/%5Cr/g, '%0D').replace(/%5Cn/g, '%0A').replace(/!/g, '%21');
+				console.log(data);
+				var contentLength = data.length;
+				request({
+				    headers: {
+				      'Content-Length': contentLength,
+				      'Content-Type': 'application/x-www-form-urlencoded'
+				    },
+				    uri: resultsURL,
+				    body: data,
+				    method: 'POST'
+				}, function (err, res, body) {
+					console.log(res);  	
+				});
+			});
+
+
+		}else{
+			toastr.error("Error");
+		}
+	});
+
 	dialog.showOpenDialog(function (filePath) {
 		var index = filePath[0].lastIndexOf("/");
 		var fp = filePath[0].substring(0,index);
