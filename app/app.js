@@ -157,6 +157,9 @@ function solvedSolution(name,problemName,problemURL){
 	});
 }
 function openFile () {
+	$("#terminal").empty();
+	$("#run").button("loading");
+	
 	var id = $("#readyToSubmit").attr("openProblem");
 	var resultsURL = $("#" + id).attr("name").split("-");
 	resultsURL = "https://www.udebug.com/UVa/" + resultsURL[0].trim();
@@ -194,11 +197,10 @@ function openFile () {
 					var Out = cheerio.load(body);
 					input = Out("textarea").text();
 					output = Out("#output-data-inner").text();
-					console.log(input);
-					console.log(output);
 					dialog.showOpenDialog(function (filePath) {
 						var index = filePath[0].lastIndexOf("/");
 						var fp = filePath[0].substring(0,index);
+						alert(fp);
 						var filename = filePath[0].substring(index+1, filePath[0].length-6);
 
 						fs.writeFile(fp+"/TestCases.txt", input, function(err) {
@@ -211,8 +213,17 @@ function openFile () {
 									console.log('exec error: ' + error);
 								}
 								console.log('java '+ filename);
+
 								$("#terminal").append("> " + 'java '+ filename + '<br><br>');
 								$("#terminal").append(stdout);
+								console.log(stdout);
+								console.log(output);
+								if(stdout.toString().trim() == output.trim()){
+									toastr.success("Congrats, Program Worked");
+								}else{
+									toastr.error("Output didn't match expected output");
+								}
+								$("#run").button('reset');
 							});
 						}); 
 					}); 	
