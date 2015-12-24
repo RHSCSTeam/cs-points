@@ -200,7 +200,6 @@ function openFile () {
 					dialog.showOpenDialog(function (filePath) {
 						var index = filePath[0].lastIndexOf("/");
 						var fp = filePath[0].substring(0,index);
-						alert(fp);
 						var filename = filePath[0].substring(index+1, filePath[0].length-6);
 
 						fs.writeFile(fp+"/TestCases.txt", input, function(err) {
