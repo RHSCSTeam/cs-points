@@ -198,11 +198,21 @@ function openFile () {
 					input = Out("textarea").text();
 					output = Out("#output-data-inner").text();
 					dialog.showOpenDialog(function (filePath) {
-						var index = filePath[0].lastIndexOf("/");
-						var fp = filePath[0].substring(0,index);
-						var filename = filePath[0].substring(index+1, filePath[0].length-6);
+						var tmp;
+						if (process.platform === "win32") {
+							filePath[0].replace("/", "\\");
+							var index = filePath[0].lastIndexOf("\\");
+							var fp = filePath[0].substring(0, index);
+							var filename = filePath[0].substring(index + 1, filePath[0].length - 6);
+							tmp = "\\TestCases.txt";
+						} else {
+							var index = filePath[0].lastIndexOf("/");
+							var fp = filePath[0].substring(0,index);
+							var filename = filePath[0].substring(index+1, filePath[0].length-6);
+							tmp = "/TestCases.txt";
+						}
 
-						fs.writeFile(fp+"/TestCases.txt", input, function(err) {
+						fs.writeFile(fp+tmp, input, function(err) {
 						    if(err) {
 						        return console.log(err);
 						    }
@@ -217,7 +227,9 @@ function openFile () {
 								$("#terminal").append(stdout);
 								console.log(stdout);
 								console.log(output);
-								if(stdout.toString().trim() == output.trim()){
+								console.log(stdout.toString().trim());
+								console.log(output.toString().trim());
+								if(stdout.toString().replace(/\s/g, '') === output.replace(/\s/g, '')){
 									toastr.success("Congrats, Program Worked");
 								}else{
 									toastr.error("Output didn't match expected output");
