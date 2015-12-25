@@ -1,3 +1,14 @@
+if(process.platform == "darwin"){
+	$(".macNav").addClass("mac");
+}
+if(localStorage.getItem("addedProblems") != null){
+	var x = localStorage.getItem("addedProblems");
+	addedProblems = x.split(",");
+	for(i=0;i<=addedProblems.length;i++){
+		$("#added").append(addedProblems[i]);
+	}
+
+}
 var exec = require('child_process').exec;
 var express = require('express');
 var fs = require('fs');
@@ -16,17 +27,7 @@ var GoogleSpreadsheet = require("google-spreadsheet");
 var done = [];
 //https://docs.google.com/forms/d/1G71c5d93HVMulv3gmBKC_EAHYvH_cbJC62Xl07csuoA/viewform?entry.1100317659=NAME&entry.445550013=PROBLEMNAME&entry.1833306606=PROBLEMURL&entry.1141395298
 var addedProblems = [];
-if(process.platform == "darwin"){
-	$(".macNav").addClass("mac");
-}
-if(localStorage.getItem("addedProblems") != null){
-	var x = localStorage.getItem("addedProblems");
-	addedProblems = x.split(",");
-	for(i=0;i<=addedProblems.length;i++){
-		$("#added").append(addedProblems[i]);
-	}
 
-}
 if(localStorage.getItem("username") != null){
 	username = localStorage.getItem("username");
 }else{
