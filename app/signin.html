@@ -37,14 +37,14 @@
 <div class="site-wrapper">
 <div class="container">
     <div style="margin-top:10%;text-align:center;">
-      <img src="img/stripes.png" width="25%" style="position:absolute;z-index:-1; top:75px" class="img"/>
-      <img src="img/logo.png" width="25%" style="z-index:0;margin-left:25px;"/>
+      <img src="img/stripes.png" width="250" style="position:absolute;z-index:-1; top:125px" class="img"/>
+      <img src="img/logo.png" width="250" style="z-index:0;margin-left:0px;"/>
     </div>
-      <form class="form-signin" style="color:#ffffff;">
+      <form class="form-signin" style="color:#ffffff;" action="index.html">
         <h2 class="form-signin-heading" >Enter your Name</h2>
-        <label for="inputEmail" class="sr-only">Email address</label>
-        <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required="" autofocus="">
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        <label for="inputEmail" class="sr-only">Your name</label>
+        <input type="username" id="inputEmail" class="form-control" placeholder="Name" required="true" autofocus="">
+        <button class="btn btn-lg btn-primary btn-block" type="submit" onclick="localStorage.setItem('username',$('#inputEmail').val())">Sign in</button>
       </form>
 
     </div>
