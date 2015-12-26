@@ -21,6 +21,15 @@
       .mac{
         margin-top: 20px;
       }
+	  .affix-top{
+		position:fixed;
+	  }
+	  .thirds{
+		width:30%;
+	  }
+	  .affix{
+		margin-right:25px;
+	  }
     </style>
     
   </head>
@@ -60,13 +69,13 @@
         <div class="container-fluid">
         <div class="row">
           <div class="col-md-4">
-            <div style="position:fixed; ">
-              <div data-spy="affix" data-offset-top="0" data-offset-bottom="0">
+            <div class="hidden-sm hidden-xs">
+              <div class="thirds" data-spy="affix" data-offset-top="0" data-offset-bottom="0">
                 <h4>Recommended Practice Problems</h4>
                 <div class="list-group" id='recommended'>
                 </div>
                 <h4>Added Practice Problems <a class="btn btn-success btn-xs" data-toggle="modal" data-target="#myModal">Add <span class='glyphicon glyphicon-plus'></span></a></h4> 
-                <div class="list-group" id='added'>
+                <div class="list-group" id='added' >
                   
                 </div>
               </div>
