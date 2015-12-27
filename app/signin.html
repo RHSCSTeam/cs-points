@@ -1,55 +1,84 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="UTF-8">
     <title>RHS CS Team - Practice Problems</title>
 
     <link href='https://fonts.googleapis.com/css?family=Muli:400,300italic,300' rel='stylesheet' type='text/css'>
     <link href="node_modules/toastr/build/toastr.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-        <link href="http://getbootstrap.com/examples/signin/signin.css" rel="stylesheet">
+    <link href="http://getbootstrap.com/examples/signin/signin.css" rel="stylesheet">
     <!-- Latest compiled and minified JavaScript -->
     <style type="text/css">
-      body{
-        font-family: 'Muli', sans-serif;
-      }
-      p{
-        font-weight: 300;
-      }
-      h2,h3,h4,h5,h6{
-        font-weight: 400
-      }
-      .mac{
-        margin-top: 20px;
-      }
-      .img{
-          -webkit-animation:spin 8s linear infinite;
-          -moz-animation:spin 8s linear infinite;
-          animation:spin 8s linear infinite;
+        body {
+            font-family: 'Muli', sans-serif;
         }
-      @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
-      @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
-      @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
-    </style>
-    
-  </head>
-  <body style="padding-top: 70px; background-color:#ff7b00;  ">
-<div class="site-wrapper">
-<div class="container">
-    <div style="margin-top:10%;text-align:center;">
-      <img src="img/stripes.png" width="250" style="position:absolute;z-index:-1; top:125px" class="img"/>
-      <img src="img/logo.png" width="250" style="z-index:0;margin-left:0px;"/>
-    </div>
-      <form class="form-signin" style="color:#ffffff;" action="index.html">
-        <h2 class="form-signin-heading" >Enter your Name</h2>
-        <label for="inputEmail" class="sr-only">Your name</label>
-        <input type="username" id="inputEmail" class="form-control" placeholder="Name" required="true" autofocus="">
-        <button class="btn btn-lg btn-primary btn-block" type="submit" onclick="localStorage.setItem('username',$('#inputEmail').val())">Sign in</button>
-      </form>
 
-    </div>
-    <script src="node_modules/jquery/dist/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"><\/script>')</script>
-    <script src="bootstrap.min.js"></script>
-  </body>
+        p {
+            font-weight: 300;
+        }
+
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-weight: 400
+        }
+
+        .mac {
+            margin-top: 20px;
+        }
+
+        .img {
+            -webkit-animation: spin 8s linear infinite;
+            -moz-animation: spin 8s linear infinite;
+            animation: spin 8s linear infinite;
+        }
+
+        @-moz-keyframes spin {
+            100% {
+                -moz-transform: rotate(360deg);
+            }
+        }
+
+        @-webkit-keyframes spin {
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin {
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+
+</head>
+
+<body style="padding-top: 70px; background-color:#ff7b00;  ">
+    <div class="site-wrapper">
+        <div class="container">
+            <div style="margin-top:10%;text-align:center;">
+                <img src="img/stripes.png" width="250" style="position:absolute;z-index:-1; top:125px" class="img" />
+                <img src="img/logo.png" width="250" style="z-index:0;margin-left:0px;" />
+            </div>
+            <form class="form-signin" style="color:#ffffff;" action="index.html">
+                <h2 class="form-signin-heading">Enter your Name</h2>
+                <label for="inputEmail" class="sr-only">Your name</label>
+                <input type="username" id="inputEmail" class="form-control" placeholder="Name" required="true" autofocus="">
+                <button class="btn btn-lg btn-primary btn-block" type="submit" onclick="localStorage.setItem('username',$('#inputEmail').val())">Sign in</button>
+            </form>
+
+        </div>
+        <script src="node_modules/jquery/dist/jquery.min.js"></script>
+        <script>
+            window.jQuery || document.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"><\/script>')
+        </script>
+        <script src="bootstrap.min.js"></script>
+</body>
+
 </html>
