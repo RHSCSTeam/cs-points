@@ -248,6 +248,7 @@ function openFile() {
     resultsURL = "https://www.udebug.com/UVa/" + resultsURL[0].trim();
     request(resultsURL, function(error, response, html) {
         if (!error) {
+            $("#terminal").append("> " + 'Setting up HTTP request...<br>');
             var DOM = cheerio.load(html);
             problem_nid = DOM("input[name='problem_nid']").attr("value");
             form_build_id = DOM("input[name='form_build_id']").attr("value");
@@ -263,6 +264,7 @@ function openFile() {
                 } else {
                     toastr.error("Error");
                 }
+                $("#terminal").append("> " + 'Getting random input...<br>');
                 data = "input_data=" + random_data + "&problem_nid=" + problem_nid + "&node_nid=&form_build_id=form-YAKY23vf6NyGi41C1Rx1YltzXhc40raY31gPD--5qBA&form_id=udebug_custom_problem_view_input_output_form&op=Go%21";
                 data = data.replace(/%20/g, '+').replace(/%22/g, '').replace(/%5Cr/g, '%0D').replace(/%5Cn/g, '%0A').replace(/!/g, '%21');
                 //input_data=6&problem_nid=1041&node_nid=&form_build_id=form-YAKY23vf6NyGi41C1Rx1YltzXhc40raY31gPD--5qBA&form_id=udebug_custom_problem_view_input_output_form&op=Go%21
@@ -276,6 +278,7 @@ function openFile() {
                     body: data,
                     method: 'POST'
                 }, function(err, res, body) {
+                    $("#terminal").append("> " + 'Getting corresponding output...<br>');
                     var Out = cheerio.load(body);
                     input = Out("textarea").text();
                     output = Out("#output-data-inner").text();
@@ -302,6 +305,7 @@ function openFile() {
                                 console.log(err);
                                 toastr.error(err);
                             }
+                            $("#terminal").append("> " + 'Writing TestCases.txt...<br>');
                             exec('java ' + filename, {
                                 cwd: filePath[0].substring(0, index)
                             }, function(error, stdout, stderr) {
