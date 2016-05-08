@@ -6,6 +6,7 @@
     <title>RHS CS Team - Practice Problems</title>
 
     <link href='https://fonts.googleapis.com/css?family=Muli:400,300italic,300' rel='stylesheet' type='text/css'>
+    <link href="css/animate.css" rel="stylesheet" type="text/css">
     <link href="node_modules/toastr/build/toastr.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <!-- Latest compiled and minified JavaScript -->
@@ -46,7 +47,7 @@
 </head>
 
 <body style="padding-top: 70px;">
-    <nav class="navbar navbar-inverse navbar navbar-fixed-top " style="background-color:#080808 !important;">
+    <nav class="navbar navbar-inverse navbar navbar-fixed-top" style="background-color:#080808 !important;">
         <div class="container-fluid macNav navbar-inverse">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
@@ -68,7 +69,7 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Profile <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="#">Log Out</a></li>
+                            <li><a href="#" onclick="logOut();">Log Out</a></li>
                             <li><a href="#">Settings</a></li>
                         </ul>
                     </li>
@@ -78,7 +79,7 @@
         </div>
         <!-- /.container-fluid -->
     </nav>
-    <div class="app">
+    <div class="app animated fadeIn">
 
         <div class="container-fluid">
             <div class="row">

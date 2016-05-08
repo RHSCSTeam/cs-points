@@ -1,6 +1,7 @@
 if (process.platform == "darwin") {
     $(".macNav").addClass("mac");
 }
+var addedProblems = [];
 if (localStorage.getItem("addedProblems") != null) {
     var x = localStorage.getItem("addedProblems");
     addedProblems = x.split(",");
@@ -26,7 +27,7 @@ var GoogleSpreadsheet = require("google-spreadsheet");
 
 var done = [];
 //https://docs.google.com/forms/d/1G71c5d93HVMulv3gmBKC_EAHYvH_cbJC62Xl07csuoA/viewform?entry.1100317659=NAME&entry.445550013=PROBLEMNAME&entry.1833306606=PROBLEMURL&entry.1141395298
-var addedProblems = [];
+
 
 if (localStorage.getItem("username") != null) {
     username = localStorage.getItem("username");
@@ -149,7 +150,13 @@ function viewProblem(id) {
 
     loadInfo("https://uva.onlinejudge.org/" + iframeURL, id);
 }
-
+function logOut(){
+  a = confirm("Are you sure you want to logOut. All local data will be erased.");
+  if(a){
+    localStorage.clear();
+    window.location = "signin.html";
+  }
+}
 function loadInfo(url, id) {
     if ($(id).hasClass("active") === false) {
         if (sessionStorage.getItem(id) === null) {
