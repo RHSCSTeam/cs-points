@@ -45,15 +45,41 @@ if (localStorage.getItem("doneProblems") != null) {
     done = localStorage.getItem("doneProblems").split(",");
 }
 
-function execTerminal(command) {
-    child = exec(command, function(error, stdout, stderr) {
-        console.log('stdout: ' + stdout);
-        console.log('stderr: ' + stderr);
-        output = stdout;
-        if (error !== null) {
-            toastr.error('exec error: ' + error);
-        }
-        return stdout;
+function execTerminal(command, dir,filename,output,id) {
+    child = exec(command,{cwd:dir}, function(error, stdout, stderr) {
+      $("#terminal").append("> " + 'java ' + filename + '<br><br>');
+      console.log("Theoretical: " + stdout.toString().replace(/\s/g, '').trim());
+      console.log("Actual: " + output.replace(/\s/g, '').trim())
+      if (error !== null) {
+          toastr.error('exec error: ' + error);
+          console.log('exec error: ' + error);
+          $("#terminal").append(error);
+      } else {
+          $("#terminal").append(stdout);
+          if (stdout.toString().replace(/\s/g, '').trim() == output.replace(/\s/g, '').trim()) {
+              toastr.success("Congrats, You successfully solved the program! +1 Point");
+              $("#run").hide();
+              var toDel = $('#' + id).text();
+              $('#' + id).hide();
+              $('#mainView').empty();
+              $('#submitAnswer').modal("hide");
+              var check;
+              for (i = 0; i <= addedProblems.length; i++) {
+                  check = cheerio.load(addedProblems[i].toString());
+                  if (check("button").text() == toDel.toString()) {
+                      done.push(check("button").text());
+                      addedProblems.remove(i);
+                  }
+
+              }
+              localStorage.setItem("addedProblems", addedProblems.toString());
+              localStorage.setItem("doneProblems", done.toString());
+              solvedSolution(username, name, url);
+          } else {
+              toastr.error("Output didn't match expected output. Make sure it matches the format perfectly!");
+          }
+      }
+      $("#run").button('reset');
     });
 }
 
@@ -93,7 +119,7 @@ function addProblem(override) {
                     paramId = "'" + id + "'";
                     var appen = '<button type="button" class="list-group-item" id="' + id + '" name="' + name + '"time="' + time + '" url="' + url + '" iframeURL=' + iframeURL + ' resultsURL="' + resultsURL + '"onclick="viewProblem(' + paramId + ')">' + name + '</button>';
 
-                    if (name == "Display #" && time == "") {
+                    if (name == "Display #" && time == "") {q
                         toastr.error("Invalid Page");
                     } else if (override != '') {
                         $("#recommended").append(appen);
@@ -163,51 +189,6 @@ function loadInfo(url, id) {
     }
 }
 
-function loadInfo(url, id) {
-    if ($(id).hasClass("active") === false) {
-        if (sessionStorage.getItem(id) === null) {
-            $(".list-group-item.active").removeClass("active");
-            $(id).addClass("active");
-            $("#mainView").empty().append("Loading");
-            request(url, function(error, response, html) {
-                if (!error) {
-                    $("#mainView").empty();
-                    var Dm = cheerio.load(html);
-                    Dm("img").each(function(i, elem) {
-                        x = Dm(this).attr("src");
-                        Dm(this).attr("src", url.substring(0, 39) + x);
-                    });
-                    newHTML = Dm("body").html();
-                    if (newHTML === null) {
-                        $("#mainView").append('<button class="btn btn-primary btn-block" id="readyToSubmit" openProblem="' + id.substring(1, id.length) + '" style="margin-top:10px;" data-toggle="modal" data-target="#submitAnswer" onclick="$(\'#run\').show();">Submit your solution</button>');
-                        $("#mainView").append('<h2>Unable to get details. Go to the site via another a browser</h2><p>Link: ' + url + '</p>');
-                        sessionStorage.setItem(id, '<h2>Unable to get details. Go to the site via another a browser</h2><p>Link: ' + url + '</p>');
-                    } else {
-                        $("#mainView").append('<button class="btn btn-primary btn-block" id="readyToSubmit" openProblem="' + id.substring(1, id.length) + '" style="margin-top:10px;" data-toggle="modal" data-target="#submitAnswer" onclick="$(\'#run\').show();">Submit your solution</button>');
-                        $("#mainView").append(newHTML);
-                        sessionStorage.setItem(id, newHTML);
-                    }
-                } else {
-                    toastr.error("Couldn't load info");
-                }
-            });
-        } else {
-            $("#mainView").empty();
-            $(".list-group-item.active").removeClass("active");
-            $(id).addClass("active");
-            $("#mainView").append('<button class="btn btn-primary btn-block" id="readyToSubmit" openProblem="' + id.substring(1, id.length) + '" style="margin-top:10px;" data-toggle="modal" data-target="#submitAnswer" onclick="$(\'#run\').show();">Submit your solution</button>');
-
-            $("#mainView").append(sessionStorage.getItem(id));
-        }
-    }
-}
-
-function loadEVERYTHING() {
-    //Might Accidently DDos UVa if used. so be careful.
-    for (var x = 35; x <= 50; x++) {
-        addProblem(("https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=3&page=show_problem&problem=" + x).toString());
-    }
-}
 
 function makeid() {
     var text = "";
@@ -253,40 +234,46 @@ function openFile() {
             problem_nid = DOM("input[name='problem_nid']").attr("value");
             form_build_id = DOM("input[name='form_build_id']").attr("value");
             form_id = DOM("input[name='form_id']").attr("value");
+            var random_id = DOM(".input_desc").attr("data-id");
             var random_data;
             var formData;
             var input;
             var output;
-
-            request.post("https://www.udebug.com/get-random-critical-input/random/" + problem_nid, function(error, response, html) {
+            console.log("random_id: " + random_id);
+            request.post({url: "https://www.udebug.com/get-selected-input/", formData: {"nid":random_id}}, function(error, response, html) {
                 if (!error) {
-                    random_data = encodeURIComponent(html);
+                    random_data = encodeURIComponent(html).replace(/%20/g, ' ').replace(/%22/g, '').replace(/%5Cr/g, ' ').replace(/%5Cn/g, ' ').replace(/!/g, ' ');;
                 } else {
                     toastr.error("Error");
                 }
+
                 $("#terminal").append("> " + 'Getting random input...<br>');
-                data = "input_data=" + random_data + "&problem_nid=" + problem_nid + "&node_nid=&form_build_id=form-YAKY23vf6NyGi41C1Rx1YltzXhc40raY31gPD--5qBA&form_id=udebug_custom_problem_view_input_output_form&op=Go%21";
-                data = data.replace(/%20/g, '+').replace(/%22/g, '').replace(/%5Cr/g, '%0D').replace(/%5Cn/g, '%0A').replace(/!/g, '%21');
-                //input_data=6&problem_nid=1041&node_nid=&form_build_id=form-YAKY23vf6NyGi41C1Rx1YltzXhc40raY31gPD--5qBA&form_id=udebug_custom_problem_view_input_output_form&op=Go%21
-                var contentLength = data.length;
-                request({
-                    headers: {
-                        'Content-Length': contentLength,
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    uri: resultsURL,
-                    body: data,
-                    method: 'POST'
+                request.post({
+                  url:resultsURL,
+                  headers:{
+                    "Content-Type": "application/x-www-form-urlencoded"
+                  },
+                  form:{
+                    "problem_nid": problem_nid,
+                    "input_data": random_data,
+                    "node_nid":"",
+                    "user_output":"",
+                    "form_id":"udebug_custom_problem_view_input_output_form"
+                  }
                 }, function(err, res, body) {
                     $("#terminal").append("> " + 'Getting corresponding output...<br>');
                     var Out = cheerio.load(body);
-                    input = Out("textarea").text();
-                    output = Out("#output-data-inner").text();
+                    input = Out("#edit-input-data").text();
+                    output = Out("#edit-output-data").text();
+                    console.log("in: " + input);
+                    console.log("out: " + output);
                     dialog.showOpenDialog(function(filePath) {
                         var tmp;
                         var fp;
                         var index;
                         var filename;
+                        console.log(filePath);
+
                         if (process.platform === "win32") {
                             filePath[0].replace("/", "\\");
                             index = filePath[0].lastIndexOf("\\");
@@ -299,6 +286,7 @@ function openFile() {
                             filename = filePath[0].substring(index + 1, filePath[0].length - 6);
                             tmp = "/TestCases.txt";
                         }
+                        console.log(filename,fp);
 
                         fs.writeFile(fp + tmp, input, function(err) {
                             if (err) {
@@ -306,42 +294,8 @@ function openFile() {
                                 toastr.error(err);
                             }
                             $("#terminal").append("> " + 'Writing TestCases.txt...<br>');
-                            exec('java ' + filename, {
-                                cwd: filePath[0].substring(0, index)
-                            }, function(error, stdout, stderr) {
-                                $("#terminal").append("> " + 'java ' + filename + '<br><br>');
-                                if (error !== null) {
-                                    toastr.error('exec error: ' + error);
-                                    console.log('exec error: ' + error);
-                                    $("#terminal").append(error);
-                                } else {
-                                    console.log('java ' + filename);
-                                    $("#terminal").append(stdout);
-                                    if (stdout.toString().replace(/\s/g, '') === output.replace(/\s/g, '')) {
-                                        toastr.success("Congrats, You successfully solved the program! +1 Point");
-                                        $("#run").hide();
-                                        var toDel = $('#' + id).text();
-                                        $('#' + id).hide();
-                                        $('#mainView').empty();
-                                        $('#submitAnswer').modal("hide");
-                                        var check;
-                                        for (i = 0; i <= addedProblems.length; i++) {
-                                            check = cheerio.load(addedProblems[i].toString());
-                                            if (check("button").text() == toDel.toString()) {
-                                                done.push(check("button").text());
-                                                addedProblems.remove(i);
-                                            }
-
-                                        }
-                                        localStorage.setItem("addedProblems", addedProblems.toString());
-                                        localStorage.setItem("doneProblems", done.toString());
-                                        solvedSolution(username, name, url);
-                                    } else {
-                                        toastr.error("Output didn't match expected output. Make sure it matches the format perfectly!");
-                                    }
-                                }
-                                $("#run").button('reset');
-                            });
+                            var cmmnd = "java " + filename + " < TestCases.txt";
+                            execTerminal(cmmnd, fp,filename,output,id);
                         });
                     });
                 });

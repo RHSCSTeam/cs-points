@@ -21,18 +21,20 @@ app.on('window-all-closed', function() {
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
     // Create the browser window.
+    var devMode = true;
     mainWindow = new BrowserWindow({
         width: 1200,
         height: 600,
         titleBarStyle: "hidden",
         autoHideMenuBar: true,
-        darkTheme: true
+        darkTheme: true,
     });
 
     // and load the index.html of the app.
     mainWindow.loadURL('file://' + __dirname + '/index.html');
     // Open the DevTools.
-
+    if(devMode)
+      mainWindow.webContents.openDevTools();
     // Emitted when the window is closed.
     mainWindow.on('closed', function() {
         // Dereference the window object, usually you would store windows
