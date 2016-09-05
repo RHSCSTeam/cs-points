@@ -1,5 +1,6 @@
 if (process.platform == "darwin") {
     $(".macNav").addClass("mac");
+    $("#hideIfMac").empty();
 }
 var addedProblems = [];
 var added_problems = {};
@@ -26,7 +27,6 @@ var output = '';
 var child;
 var usr;
 var username;
-var GoogleSpreadsheet = require("google-spreadsheet");
 
 var done = {};
 //https://docs.google.com/forms/d/1G71c5d93HVMulv3gmBKC_EAHYvH_cbJC62Xl07csuoA/viewform?entry.1100317659=NAME&entry.445550013=PROBLEMNAME&entry.1833306606=PROBLEMURL&entry.1141395298
@@ -37,6 +37,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     console.log(user);
     username = user.displayName;
     $("#profile").text(username);
+    $("#cover").fadeOut(250);
     var addedRef = firebase.database().ref('/users/' + usr.uid + "/added_problems");
     addedRef.once('value').then(function(snapshot) {
       for(value in snapshot.val()){
@@ -71,6 +72,11 @@ firebase.auth().onAuthStateChanged(function(user) {
     });
     firebase.database().ref().child('/users/' + usr.uid + "/points").once("value").then(function(snapshot) {
       $("#points").text(snapshot.val());
+    });
+    var feedRef = firebase.database().ref('/solved_problems');
+    feedRef.on('child_added', function(data) {
+      var d = new Date(data.val()["date"]).toLocaleString();
+      addToFeed("<strong>" + data.val()["name"] + "</strong> solved <strong>" + data.val()["title"].trim() + "</strong><span class='pull-right'>" + d + "</span>")
     });
   } else {
     window.location = "signin.html";
@@ -153,7 +159,11 @@ function changeView(view){
 }
 function addToDone(name){
   var appen = '<button type="button" class="list-group-item">' + name + '</button>';
-  $("#solved_probs").append(appen);
+  $("#solved_probs").prepend(appen);
+}
+function addToFeed(name){
+  var appen = '<button type="button" class="list-group-item">' + name + '</button>';
+  $("#solved_feed").prepend(appen);
 }
 function addProblem(override, doit) {
     url = document.getElementById("url").value;
@@ -314,7 +324,8 @@ function solvedSolution(problemName, problemURL) {
       uid: usr.uid,
       title: problemName,
       name: usr.displayName,
-      url: problemURL
+      url: problemURL,
+      date: new Date().toString()
     };
 
     // Get a key for a new Post.

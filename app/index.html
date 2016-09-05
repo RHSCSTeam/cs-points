@@ -5,18 +5,18 @@
     <meta charset="UTF-8">
     <title>RHS CS Team - Practice Problems</title>
 
-    <link href='https://fonts.googleapis.com/css?family=Muli:400,300italic,300' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400" rel="stylesheet">
     <link href="css/animate.css" rel="stylesheet" type="text/css">
     <link href="node_modules/toastr/build/toastr.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <!-- Latest compiled and minified JavaScript -->
     <style type="text/css">
         body {
-            font-family: 'Muli', sans-serif;
+            font-family: 'Open Sans', sans-serif;
         }
 
         p {
-            font-weight: 300;
+            font-weight: 200;
         }
 
         h2,
@@ -24,7 +24,7 @@
         h4,
         h5,
         h6 {
-            font-weight: 400
+            font-weight: 300
         }
 
         .mac {
@@ -50,23 +50,27 @@
         	background-color: rgba(0,0,0,0);
         }
 
+
+    </style>
+    <style type="text/css" media="screen" id="hideIfMac">
         body::-webkit-scrollbar
         {
-        	width: 6px;
+            width: 6px;
           border-radius:10px;
-        	background-color: #eeeeee;
+            background-color: #eeeeee;
         }
 
         body::-webkit-scrollbar-thumb
         {
-        	background-color: #cccccc;
+            background-color: #cccccc;
           border-radius: 10px;
-        }
+        }    
     </style>
 
 </head>
 
-<body style="padding-top: 70px;">
+<body >
+    <div style="background-color: #ff7b00; position: absolute; width: 100%; height: 100%; z-index: 99999999999999999999999999999;" id="cover"></div>
     <nav class="navbar navbar-inverse navbar navbar-fixed-top" style="background-color:#080808 !important;">
         <div class="container-fluid macNav navbar-inverse">
             <!-- Brand and toggle get grouped for better mobile display -->
@@ -98,7 +102,7 @@
         </div>
         <!-- /.container-fluid -->
     </nav>
-    <div class="app">
+    <div class="app" style="padding-top: 70px;">
 
         <div class="container-fluid">
           <div id="main">
@@ -141,9 +145,17 @@
             </div>
           </div>
           <div id="solved" hidden>
-            <h4>Your solved problems</h4>
-            <div class="list-group" id='solved_probs'>
-            </div>class="form-control"
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Your solved problems</h4>
+                    <div class="list-group" id='solved_probs'>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h4>Solved problems feed</h4>
+                    <div class="list-group" id='solved_feed'>
+                    </div>
+                </div>
             </div>
           </div>
         </div>
@@ -179,8 +191,8 @@
                             <div class="modal-body">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <h2>Step 1: Make sure your read a file called "TestCases.txt"</h2>
-                                        <pre>File file = new File("TestCases.txt");</pre>
+                                        <h2>Step 1: Make sure you are reading from the keyboard input.</h2>
+                                        <pre>Scanner kb = new Scanner(System.in);</pre>
                                         <h2>Step 2: Add your main .class file</h2>
                                         <button class="btn btn-primary" onclick="openFile();" id='run'>Add file and run</button>
                                     </div>
