@@ -125,6 +125,7 @@
             firebase.database().ref('users/' + userId).set({
               username: name,
               email: email,
+              points: 0
             }).then(function(){
               window.location = "index.html";
             });
