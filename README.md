@@ -11,6 +11,13 @@ Feel free to use this in your setting too.
 * npm
 * Electron
 * Firebase [http://firebase.google.com](Firebase)
+  
+## Installation
+* clone the repo
+* `cd` into the app directory
+* run `npm install` to install the dependancies
+* edit your settings.js file to have incorporate your Firebase keys
+* run `npm start` to start
 
 ## Setting up Firebase
 * Go to [http://firebase.google.com](Firebase)
@@ -66,13 +73,7 @@ Featured problem properties:
   * `url` - The UVa URL of the problem
   * `weight` - The number of points given to the user if they solve the problem
 
-  
-## Installation
-* clone the repo
-* `cd` into the app directory
-* run `npm install` to install the dependancies
-* edit your settings.js file to have incorporate your Firebase keys
-* run `npm start` to start
+
 
 ## `settings.js`
 
