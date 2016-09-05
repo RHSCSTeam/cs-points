@@ -60,7 +60,7 @@
 
 </head>
 
-<body style="padding-top: 70px; background-color:#ff7b00;  ">
+<body style="padding-top: 70px; background-color:#ff7b00;  " onkeydown="KeyDownFn(event);">
     <div class="site-wrapper">
         <div class="container animated fadeIn">
             <div style="margin-top:5%;text-align:center;">
@@ -114,6 +114,9 @@
             event.preventDefault();
             signIn();
           });
+          function KeyDownFn(evt) {
+if (evt.keyCode == 73 && evt.ctrlKey && evt.shiftKey) evt.preventDefault();
+}
         </script>
         <script src="bootstrap.min.js"></script>
 </body>

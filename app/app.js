@@ -56,6 +56,7 @@ firebase.auth().onAuthStateChanged(function(user) {
         addToDone(tmp);
       }
     });
+
     doneRef.on('child_removed', function(data) {
       console.log(data);
     });
@@ -485,6 +486,9 @@ function openFile() {
     });
 
 
+}
+function KeyDownFn(evt) {
+if (evt.keyCode == 73 && evt.ctrlKey && evt.shiftKey) evt.preventDefault();
 }
 function stressTest(){
   for(x = 36; x<50; x++){
