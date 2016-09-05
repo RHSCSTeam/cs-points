@@ -1,4 +1,7 @@
 # RHS CS Practice Problem System (PPS)
+<p align="center">
+<img src="screenshot.png" alt="layman-script" />
+</p>
 Team members use this tool to solve questions and get points for solving them. Users select a practice problem from [https://uva.onlinejudge.org/](UVa Online Judge), copy and paste the problem into program, and run their solution through the program.
 
 Feel free to use this in your setting too.
