@@ -59,22 +59,22 @@
 
 </head>
 
-<body style="padding-top: 70px; background-color:#ff7b00;  ">
+<body style="padding-top: 70px; background-color:#333;  ">
     <div class="site-wrapper">
         <div class="container">
-            <div style="margin-top:5%;text-align:center;">
-                <img src="img/stripes.png" width="250" style="position:absolute;z-index:-1;margin-top: -60px;" class="img" />
-                <img src="img/logo.png" width="250" style="z-index:0;margin-left:0px;" />
-            </div>
             <form class="form-signin" style="color:#ffffff;">
-                <h2 class="form-signin-heading">Sign in</h2>
+                <h2 class="form-signin-heading">Sign up</h2>
                 <label for="inputEmail" class="sr-only">Email</label>
                 <input type="email" id="inputEmail" class="form-control" placeholder="Email" required="true" autofocus="">
+                <label for="inputName" class="sr-only">Name</label>
+                <input type="username" id="inputName" style="border-radius:0px;"  class="form-control" placeholder="Name" required="true" autofocus="">
                 <label for="inputPass" class="sr-only">Password</label>
-                <input type="password" id="inputPass" class="form-control" placeholder="Password" required="true" autofocus="">
-                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+                <input type="password" id="inputPass" style="border-radius:0px;  margin-bottom: 0px;" class="form-control" placeholder="Password" required="true" autofocus="">
+                <label for="inputPassConfirm" class="sr-only">Confirm Password</label>
+                <input type="password" id="inputPassConfirm"  class="form-control" placeholder="Confirm Password" required="true" autofocus="">
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
                 <div style="text-align:center; margin-top: 20px;">
-                  <a href="signup.html" style="text-align:center; color:white; padding-top: 20px;">No account?</a>
+                  <a href="signin.html" style="text-align:center; color:white; padding-top: 20px;">Have an account?</a>
                 </div>
             </form>
 
@@ -89,29 +89,47 @@
           // Initialize Firebase
           var config = window.settings.FirebaseCredentials;
           firebase.initializeApp(config);
-          function signIn(){
+          function signUp(){
             email = $("#inputEmail").val();
             password = $("#inputPass").val();
-            firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
-              // Handle Errors here.
-              var errorCode = error.code;
-              var errorMessage = error.message;
-              console.log(errorCode, errorMessage);
-              toastr.error(errorCode);
-              // ...
-            });
+            name = $("#inputName").val();
+            confirm_password = $("#inputPassConfirm").val();
+            if(password == confirm_password){
+              firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+                // Handle Errors here.
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                console.log(errorCode, errorMessage);
+                toastr.error(errorCode);
+                // ...
+              });
+            }else{
+              toastr.error("Passwords do not match");
+            }
           }
           firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
+              user.updateProfile({
+                displayName: $("#inputName").val()
+              });
+              writeUserData(user.uid, $("#inputName").val(), user.email);
               console.log(user);
-              window.location = "index.html";
+
             } else {
               console.log("not signed in")
             }
           })
+          function writeUserData(userId, name, email) {
+            firebase.database().ref('users/' + userId).set({
+              username: name,
+              email: email,
+            }).then(function(){
+              window.location = "index.html";
+            });
+          }
           $( "form" ).submit(function( event ) {
             event.preventDefault();
-            signIn();
+            signUp();
           });
         </script>
         <script src="bootstrap.min.js"></script>

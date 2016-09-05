@@ -37,10 +37,30 @@
 
         .thirds {
             width: 30%;
+            overflow: auto;
         }
 
         .affix {
             margin-right: 25px;
+        }
+
+
+        body::-webkit-scrollbar-track
+        {
+        	background-color: rgba(0,0,0,0);
+        }
+
+        body::-webkit-scrollbar
+        {
+        	width: 6px;
+          border-radius:10px;
+        	background-color: #eeeeee;
+        }
+
+        body::-webkit-scrollbar-thumb
+        {
+        	background-color: #cccccc;
+          border-radius: 10px;
         }
     </style>
 
@@ -62,15 +82,14 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Home<span class="sr-only">(current)</span></a></li>
-                    <li><a href="#">Solved Problems</a></li>
+                    <li class="active" id="mainNav" onclick="changeView('main')"><a href="#">Home<span class="sr-only">(current)</span></a></li>
+                    <li id="solvedNav"><a href="#"  onclick="changeView('solved')">Solved Problems</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Profile <span class="caret"></span></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" ><span id="profile">Profile</span>   <span class="badge"><span id="points">0</span> points</span> <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="#" onclick="logOut();">Log Out</a></li>
-                            <li><a href="#">Settings</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -79,44 +98,55 @@
         </div>
         <!-- /.container-fluid -->
     </nav>
-    <div class="app animated fadeIn">
+    <div class="app">
 
         <div class="container-fluid">
+          <div id="main">
             <div class="row">
-                <div class="col-md-4">
-                    <div class="hidden-sm hidden-xs">
-                        <div class="thirds" data-spy="affix" data-offset-top="0" data-offset-bottom="0">
-                            <h4>Recommended Practice Problems</h4>
-                            <div class="list-group" id='recommended'>
-                            </div>
-                            <h4>Added Practice Problems <a class="btn btn-success btn-xs" data-toggle="modal" data-target="#myModal">Add <span class='glyphicon glyphicon-plus'></span></a></h4>
-                            <div class="list-group" id='added'>
-                            </div>
-                        </div>
-
+              <div class="col-md-4">
+                <div class="hidden-sm hidden-xs">
+                  <div class="thirds" data-spy="affix" data-offset-top="0" data-offset-bottom="0">
+                    <h4>Recommended Practice Problems</h4>
+                    <div class="list-group" id='recommended'>
                     </div>
+                    <h4>Added Practice Problems <a class="btn btn-success btn-xs" data-toggle="modal" data-target="#myModal">Add <span class='glyphicon glyphicon-plus'></span></a></h4>
+                    <div class="list-group" id='added'>
+                    </div>
+                  </div>
+
                 </div>
-                <div class="col-md-8">
-                    <h2 id='title'></h2>
-                    <h5 id='timelimit'></h5>
-                    <a href='' id='link' target="_blank">View link in browser</a>
+              </div>
+              <div class="col-md-8">
+                <h2 id='title'></h2>
+                <h5 id='timelimit'></h5>
+                <div id="linkContainer">
 
-                    <div>
-                        <style type="text/css">
-                            h2 {
-                                font-size: 18px;
-                            }
+                </div>
+                <div>
+                  <style type="text/css">
+                    h2 {
+                        font-size: 18px;
+                    }
 
-                            h1 {
-                                font-size: 24px;
-                            }
-                        </style>
-                        <div id='mainView'>
+                    h1 {
+                        font-size: 24px;
+                    }
+                  </style>
+                  <div id='mainView'>
 
 
-                        </div>
-                    </div>
-
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="solved" hidden>
+            <h4>Your solved problems</h4>
+            <div class="list-group" id='solved_probs'>
+            </div>class="form-control"
+            </div>
+          </div>
+        </div>
                 </div>
                 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                     <div class="modal-dialog" role="document">
@@ -129,7 +159,7 @@
                             </div>
                             <div class="modal-body">
                                 <p>Copy and paste the UVa Problem url here.</p>
-                                <input type="url" id="url" name="fname">
+                                <input class="form-control" type="url" id="url" name="fname" style="width:100%" placeholder="Enter URL here">
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-primary" onclick="addProblem('')" data-dismiss="modal">Add</button>
@@ -167,6 +197,14 @@
                     window.jQuery || document.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"><\/script>')
                 </script>
                 <script src="bootstrap.min.js"></script>
+                <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
+                <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+                <script src="settings.js"></script>
+                <script>
+                  // Initialize Firebase
+                  var config = window.settings.FirebaseCredentials;
+                  firebase.initializeApp(config);
+                </script>
                 <script src='app.js'></script>
 
 </body>

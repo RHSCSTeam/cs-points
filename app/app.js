@@ -2,14 +2,17 @@ if (process.platform == "darwin") {
     $(".macNav").addClass("mac");
 }
 var addedProblems = [];
-if (localStorage.getItem("addedProblems") != null) {
-    var x = localStorage.getItem("addedProblems");
-    addedProblems = x.split(",");
-    for (i = 0; i <= addedProblems.length; i++) {
-        $("#added").append(addedProblems[i]);
-    }
+var added_problems = {};
+var featured_problems = {};
 
-}
+// if (localStorage.getItem("addedProblems") != null) {
+//     var x = localStorage.getItem("addedProblems");
+//     addedProblems = x.split(",");
+//     for (i = 0; i <= addedProblems.length; i++) {
+//         $("#added").append(addedProblems[i]);
+//     }
+//
+// }
 var exec = require('child_process').exec;
 var express = require('express');
 var fs = require('fs');
@@ -17,38 +20,79 @@ var request = require('request');
 var cheerio = require('cheerio');
 var toastr = require("toastr");
 var querystring = require('querystring');
-var remote = require('remote');
-var dialog = remote.require('dialog');
+const {dialog} = require('electron').remote
 var path = require('path');
 var output = '';
 var child;
+var usr;
 var username;
 var GoogleSpreadsheet = require("google-spreadsheet");
 
-var done = [];
+var done = {};
 //https://docs.google.com/forms/d/1G71c5d93HVMulv3gmBKC_EAHYvH_cbJC62Xl07csuoA/viewform?entry.1100317659=NAME&entry.445550013=PROBLEMNAME&entry.1833306606=PROBLEMURL&entry.1141395298
 
+firebase.auth().onAuthStateChanged(function(user) {
+  if (user) {
+    usr = user;
+    console.log(user);
+    username = user.displayName;
+    $("#profile").text(username);
+    var addedRef = firebase.database().ref('/users/' + usr.uid + "/added_problems");
+    addedRef.once('value').then(function(snapshot) {
+      for(value in snapshot.val()){
+        var tmp = snapshot.val()[value]["url"]
+        added_problems[tmp] = firebase.database().ref('/users/' + usr.uid + "/added_problems/" + value);
+        console.log(tmp);
+        addProblem(tmp, true);
+      }
+    });
+    var doneRef = firebase.database().ref('/users/' + usr.uid + "/solved_problems");
+    doneRef.once('value').then(function(snapshot) {
+      for(value in snapshot.val()){
+        var tmp = snapshot.val()[value]["title"]
+        done[tmp] = firebase.database().ref('/users/' + usr.uid + "/solved_problems/" + value);
+        console.log(tmp);
+        addToDone(tmp);
+      }
+    });
+    doneRef.on('child_removed', function(data) {
+      console.log(data);
+    });
+    var featuredRef = firebase.database().ref('/featured_problems');
+    featuredRef.once('value').then(function(snapshot) {
+      for(value in snapshot.val()){
+        var tmp = snapshot.val()[value]["name"];
+        var tmp2 = snapshot.val()[value]["url"];
+        featured_problems[tmp] = snapshot.val()[value]["weight"];
+        added_problems[tmp2] = firebase.database().ref('/featured_problems/' + value);
+        addProblem(tmp2, false);
+        console.log(tmp);
+      }
+    });
+    firebase.database().ref().child('/users/' + usr.uid + "/points").once("value").then(function(snapshot) {
+      $("#points").text(snapshot.val());
+    });
+  } else {
+    window.location = "signin.html";
+  }
+})
 
-if (localStorage.getItem("username") != null) {
-    username = localStorage.getItem("username");
-} else {
-    window.location.replace("signin.html");
-}
-var my_sheet = new GoogleSpreadsheet('1zivhDkTjW1Wj8qGf05ZUpdeLalhbEWJDuUusUy9rNAg');
-my_sheet.getRows(1, function(err, row_data) {
-    for (i = 1; i <= row_data.length; i++) {
-        if (row_data[i] !== undefined) {
-            addProblem(row_data[i].featuredproblems);
-        }
-    }
-});
-if (localStorage.getItem("doneProblems") != null) {
-    done = localStorage.getItem("doneProblems").split(",");
-}
+// var my_sheet = new GoogleSpreadsheet('1zivhDkTjW1Wj8qGf05ZUpdeLalhbEWJDuUusUy9rNAg');
+// my_sheet.getRows(1, function(err, row_data) {
+//     for (i = 1; i <= row_data.length; i++) {
+//         if (row_data[i] !== undefined) {
+//             addProblem(row_data[i].featuredproblems, false);
+//         }
+//     }
+// });
+
+
 
 function execTerminal(command, dir,filename,output,id) {
+    var startTime = Date.now() / 1000;
     child = exec(command,{cwd:dir}, function(error, stdout, stderr) {
-      $("#terminal").append("> " + 'java ' + filename + '<br><br>');
+      $("#terminal").append("> " + command);
+      console.log("stderr: " + stderr.toString());
       console.log("Theoretical: " + stdout.toString().replace(/\s/g, '').trim());
       console.log("Actual: " + output.replace(/\s/g, '').trim())
       if (error !== null) {
@@ -58,33 +102,60 @@ function execTerminal(command, dir,filename,output,id) {
       } else {
           $("#terminal").append(stdout);
           if (stdout.toString().replace(/\s/g, '').trim() == output.replace(/\s/g, '').trim()) {
-              toastr.success("Congrats, You successfully solved the program! +1 Point");
+              toastr.success("Congrats, You successfully solved the program!");
+              toastr.success("Runtime: "+ ((Date.now() / 1000) - startTime) + " seconds.");
               $("#run").hide();
               var toDel = $('#' + id).text();
               $('#' + id).hide();
               $('#mainView').empty();
               $('#submitAnswer').modal("hide");
               var check;
-              for (i = 0; i <= addedProblems.length; i++) {
+              for (i = 0; i < addedProblems.length; i++) {
                   check = cheerio.load(addedProblems[i].toString());
+                  console.log(check("button").attr("name"), toDel.toString());
                   if (check("button").text() == toDel.toString()) {
-                      done.push(check("button").text());
-                      addedProblems.remove(i);
+                      if(!(featured_problems[check("button").attr("name")])){
+                        addedProblems.remove(i);
+                      }
+                      console.log(added_problems, check("button").attr("url"));
+                      added_problems[check("button").attr("url")].remove();
+                      solvedSolution(check("button").attr("name"), check("button").attr("url"));
+                      addToDone(check("button").attr("name"));
+                      new Audio("pop.mp3").play()
                   }
 
               }
-              localStorage.setItem("addedProblems", addedProblems.toString());
-              localStorage.setItem("doneProblems", done.toString());
-              solvedSolution(username, name, url);
           } else {
               toastr.error("Output didn't match expected output. Make sure it matches the format perfectly!");
+              fs.writeFile(dir + "TestCases.txt", "", function(err) {
+                  if (err) {
+                      console.log(err);
+                      toastr.error("Error clearing TestCases.txt");
+                  }
+              });
           }
       }
       $("#run").button('reset');
     });
 }
-
-function addProblem(override) {
+function changeView(view){
+  $("#main").hide();
+  $("#mainNav").removeClass("active");
+  $("#solved").hide();
+  $("#solvedNav").removeClass("active");
+  if(view == "solved"){
+    $("#solved").show();
+    $("#solvedNav").addClass("active");
+  }else if(view == "main"){
+    $("#main").show();
+    $("#mainNav").addClass("active");
+  }
+}
+function addToDone(name){
+  var appen = '<button type="button" class="list-group-item">' + name + '</button>';
+  $("#solved_probs").append(appen);
+}
+function addProblem(override, doit) {
     url = document.getElementById("url").value;
     if (override != '') {
         url = override;
@@ -107,8 +178,9 @@ function addProblem(override) {
                 time = name[2];
                 name = name[0];
                 var cancel = false;
-                for (i = 0; i <= done.length; i++) {
-                    if (done[i] == name) {
+                for (val in done) {
+                  console.log(val)
+                    if (val == name) {
                         if (override == '') {
                             toastr.error("You already solved this problem");
                         }
@@ -118,15 +190,22 @@ function addProblem(override) {
                 if (!cancel) {
                     var id = makeid();
                     paramId = "'" + id + "'";
-                    var appen = '<button type="button" class="list-group-item" id="' + id + '" name="' + name + '"time="' + time + '" url="' + url + '" iframeURL=' + iframeURL + ' resultsURL="' + resultsURL + '"onclick="viewProblem(' + paramId + ')">' + name + '</button>';
 
+                    var appen = '<button type="button" class="list-group-item" id="' + id + '" name="' + name + '"time="' + time + '" url="' + url + '" iframeURL=' + iframeURL + ' resultsURL="' + resultsURL + '"onclick="viewProblem(' + paramId + ')">' + name + '</button>';
+                    if(featured_problems[name.trim()]){
+                      var appen = '<button type="button" class="list-group-item" id="' + id + '" name="' + name + '"time="' + time + '" url="' + url + '" iframeURL=' + iframeURL + ' resultsURL="' + resultsURL + '"onclick="viewProblem(' + paramId + ')">' + name + '<span class="badge">'+featured_problems[name.trim()]+' point(s)</span></button>';
+                    }
+                    if(override == ""){
+                      addNewProblem(usr.uid, name, url);
+                    }
                     if (name == "Display #" && time == "") {q
                         toastr.error("Invalid Page");
-                    } else if (override != '') {
+                    } else if (override != '' && !(doit)) {
+                        addedProblems.push(appen);
                         $("#recommended").append(appen);
                     } else {
-                        $("#added").append(appen);
                         addedProblems.push(appen);
+                        $("#added").append(appen);
                         localStorage.setItem("addedProblems", addedProblems.toString());
                     }
                 }
@@ -136,7 +215,20 @@ function addProblem(override) {
         });
     }
 }
+function addNewProblem(uid, name, url) {
+  // A post entry.
+  var postData = {
+    uid: usr.uid,
+    title: name,
+    url: url
+  };
 
+  // Get a key for a new Post.
+  var newPostKey = firebase.database().ref().child('posts').push().key;
+  var ref = firebase.database().ref('/users/' + uid + '/added_problems/' + newPostKey);
+  added_problems[url] = ref;
+  return ref.set(postData);
+}
 function viewProblem(id) {
     id = '#' + id;
     var name = $(id).attr("name");
@@ -146,15 +238,19 @@ function viewProblem(id) {
     var resultsURL = $(id).attr("resultsURL");
     $("#title").text(name);
     $('#timelimit').text(time);
-    $('#link').attr("href", url);
+    $('#linkContainer').empty().append("<a href='#' id='link' onclick='window.open(\""+url+"\");'>View link in browser</a>")
 
     loadInfo("https://uva.onlinejudge.org/" + iframeURL, id);
 }
 function logOut(){
-  a = confirm("Are you sure you want to logOut. All local data will be erased.");
+  a = confirm("Are you sure you want to log out. ");
   if(a){
-    localStorage.clear();
-    window.location = "signin.html";
+    firebase.auth().signOut().then(function() {
+      localStorage.clear();
+      window.location = "signin.html";
+    }, function(error) {
+      toastr.error(error);
+    });
   }
 }
 function loadInfo(url, id) {
@@ -207,16 +303,35 @@ function makeid() {
     return text;
 }
 
-function solvedSolution(name, problemName, problemURL) {
-    //google forms response
-    url = 'https://docs.google.com/forms/d/1G71c5d93HVMulv3gmBKC_EAHYvH_cbJC62Xl07csuoA/formResponse?entry.1100317659=' + encodeURIComponent(name) + '&entry.445550013=' + encodeURIComponent(problemName) + '&entry.1833306606=' + encodeURIComponent(problemURL) + '&entry.1141395298';
-    request.post(url, function(error, response, html) {
-        if (!error) {
-            toastr.success("Problem Solved");
-        } else {
-            toastr.error("Error");
-        }
+function solvedSolution(problemName, problemURL) {
+    // A post entry.
+    var add = 1;
+    if(featured_problems[problemName.trim()]){
+      add = featured_problems[problemName.trim()];
+      toastr.success("+" + add);
+    }
+    var postData = {
+      uid: usr.uid,
+      title: problemName,
+      name: usr.displayName,
+      url: problemURL
+    };
+
+    // Get a key for a new Post.
+    var newPostKey = firebase.database().ref().child('solved_problems').push().key;
+
+    // Write the new post's data simultaneously in the posts list and the user's post list.
+    var updates = {};
+    updates['/users/' + usr.uid + '/solved_problems/' + newPostKey] = postData;
+    firebase.database().ref().child('/users/' + usr.uid + "/points").once("value").then(function(snapshot) {
+      add += snapshot.val();
+      $("#points").text(add);
+      updates['/users/' + usr.uid + '/points'] = add;
+      updates['/solved_problems/' + newPostKey] = postData;
+
+      return firebase.database().ref().update(updates);
     });
+
 }
 // Array Remove - By John Resig (MIT Licensed)
 Array.prototype.remove = function(from, to) {
@@ -248,25 +363,29 @@ function openFile() {
             var output;
             console.log("random_id: " + random_id);
             request.post({url: "https://www.udebug.com/get-selected-input/", formData: {"nid":random_id}}, function(error, response, html) {
+                console.log(html);
                 if (!error) {
-                    random_data = encodeURIComponent(html).replace(/%20/g, ' ').replace(/%22/g, '').replace(/%5Cr/g, ' ').replace(/%5Cn/g, ' ').replace(/!/g, ' ');;
+                    random_data = JSON.parse(html)["input_value"];
                 } else {
                     toastr.error("Error");
                 }
-
+                var payload = {
+                  "problem_nid":problem_nid,
+                  "input_data":random_data,
+                  "node_nid":"",
+                  "user_output":"",
+                  "form_id":"udebug_custom_problem_view_input_output_form"
+                }
+                var formData = querystring.stringify(payload);
+                var contentLength = formData.length;
                 $("#terminal").append("> " + 'Getting random input...<br>');
                 request.post({
                   url:resultsURL,
-                  headers:{
-                    "Content-Type": "application/x-www-form-urlencoded"
+                  headers: {
+                    'Content-Length': contentLength,
+                    'Content-Type': 'application/x-www-form-urlencoded'
                   },
-                  form:{
-                    "problem_nid": problem_nid,
-                    "input_data": random_data,
-                    "node_nid":"",
-                    "user_output":"",
-                    "form_id":"udebug_custom_problem_view_input_output_form"
-                  }
+                  body:formData
                 }, function(err, res, body) {
                     $("#terminal").append("> " + 'Getting corresponding output...<br>');
                     var Out = cheerio.load(body);
@@ -285,12 +404,12 @@ function openFile() {
                             filePath[0].replace("/", "\\");
                             index = filePath[0].lastIndexOf("\\");
                             fp = filePath[0].substring(0, index);
-                            filename = filePath[0].substring(index + 1, filePath[0].length - 6);
+                            filename = filePath[0].substring(index + 1, filePath[0].length - 5);
                             tmp = "\\TestCases.txt";
                         } else {
                             index = filePath[0].lastIndexOf("/");
                             fp = filePath[0].substring(0, index);
-                            filename = filePath[0].substring(index + 1, filePath[0].length - 6);
+                            filename = filePath[0].substring(index + 1, filePath[0].length - 5);
                             tmp = "/TestCases.txt";
                         }
                         console.log(filename,fp);
@@ -303,6 +422,7 @@ function openFile() {
                             $("#terminal").append("> " + 'Writing TestCases.txt...<br>');
                             var cmmnd = "java " + filename + " < TestCases.txt";
                             execTerminal(cmmnd, fp,filename,output,id);
+
                         });
                     });
                 });
@@ -315,4 +435,9 @@ function openFile() {
     });
 
 
+}
+function stressTest(){
+  for(x = 36; x<50; x++){
+    addProblem("https://uva.onlinejudge.org/index.php?option=com_onlinejudge&Itemid=8&category=3&page=show_problem&problem=" + x, true);
+  }
 }
