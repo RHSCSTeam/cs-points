@@ -25,9 +25,9 @@ const {dialog} = require('electron').remote
 var path = require('path');
 var output = '';
 var child;
+var leaderboard = [null,null,null];
 var usr;
 var username;
-
 var done = {};
 //https://docs.google.com/forms/d/1G71c5d93HVMulv3gmBKC_EAHYvH_cbJC62Xl07csuoA/viewform?entry.1100317659=NAME&entry.445550013=PROBLEMNAME&entry.1833306606=PROBLEMURL&entry.1141395298
 
@@ -78,6 +78,18 @@ firebase.auth().onAuthStateChanged(function(user) {
       var d = new Date(data.val()["date"]).toLocaleString();
       addToFeed("<strong>" + data.val()["name"] + "</strong> solved <strong>" + data.val()["title"].trim() + "</strong><span class='pull-right'>" + d + "</span>")
     });
+
+
+    var usersRef = firebase.database().ref('/users');
+    refreshLeaderboard(usersRef);
+    usersRef.on('child_removed', function(data) {
+      refreshLeaderboard(usersRef);
+    });
+    usersRef.on('child_changed', function(data) {
+      refreshLeaderboard(usersRef);
+    });
+
+
   } else {
     window.location = "signin.html";
   }
@@ -91,8 +103,35 @@ firebase.auth().onAuthStateChanged(function(user) {
 //         }
 //     }
 // });
+Object.size = function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+  }
+function refreshLeaderboard(usersRef){
+  console.log("called");
+  usersRef.orderByChild('points').limitToLast(3).once('value').then(function(data){
+    var count = 2;
+    data.forEach(function(child){
+      leaderboard[count] = child.val();
 
-
+      if(count == 0){
+        $("#leaderboard").show();
+        $("#firstPlaceName").text(leaderboard[0]["username"]);
+        $("#firstPlacePoints").text(leaderboard[0]["points"] + "pts");
+        $("#secondPlaceName").text(leaderboard[1]["username"]);
+        $("#secondPlacePoints").text(leaderboard[1]["points"] + "pts");
+        $("#thirdPlaceName").text(leaderboard[2]["username"]);
+        $("#thirdPlacePoints").text(leaderboard[2]["points"] + "pts");
+      }else{
+        $("#leaderboard").hide();
+      }
+      count--;
+    });
+  });
+}
 
 function execTerminal(command, dir,filename,output,id) {
     var startTime = Date.now() / 1000;

@@ -64,7 +64,7 @@
         {
             background-color: #cccccc;
           border-radius: 10px;
-        }    
+        }
     </style>
 
 </head>
@@ -145,18 +145,58 @@
             </div>
           </div>
           <div id="solved" hidden>
-            <div class="row">
+            <div class="row" id="leaderboard">
+              <h4 style="
+                padding-left: 15px;
+              ">Leaderboard</h4>
                 <div class="col-md-6">
+                  <div class="jumbotron" style="padding-right: 30px;height: 170px; padding-left: 30px; padding-top:24px; padding-bottom:24px; background-color:#ffb300; color:white;">
+                    <h4>Most points</h4>
+                    <h1 style="
+                        margin-top: 0px;
+                        font-size: 35px;
+                    " id="firstPlaceName"></h1>
+                    <h4 style="font-weight:600" id="firstPlacePoints"></h4>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="jumbotron" style="padding-right: 30px;padding-left: 30px; padding-top:24px; padding-bottom:24px; height: 170px;">
+                        <h4 style="font-size:18px">2nd place</h4>
+                        <h1 style="
+                            margin-top: 0px;
+                            font-size: 25px;
+                        " id="secondPlaceName"></h1>
+                        <h4 style="font-weight:600; font-size:18px" id="secondPlacePoints"></h4>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="jumbotron" style="padding-right: 30px;padding-left: 30px; padding-top:24px; padding-bottom:24px; height: 170px;">
+                        <h4 style="font-size:18px">3rd place</h4>
+                        <h1 style="
+                            margin-top: 0px;
+                            font-size: 25px;
+                        " id="thirdPlaceName"></h1>
+                        <h4 style="font-weight:600; font-size:18px" id="thirdPlacePoints"></h4>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
                     <h4>Your solved problems</h4>
                     <div class="list-group" id='solved_probs'>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-8">
                     <h4>Solved problems feed</h4>
                     <div class="list-group" id='solved_feed'>
                     </div>
                 </div>
             </div>
+
           </div>
         </div>
                 </div>
