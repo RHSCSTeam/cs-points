@@ -6,7 +6,7 @@ Team members use this tool to solve questions and get points for solving them. U
 
 Feel free to use this in your setting too.
 
-## Dependancies
+## Dependencies
 * NodeJS
 * npm
 * Electron
