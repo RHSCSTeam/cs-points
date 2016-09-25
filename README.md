@@ -68,7 +68,7 @@ window.settings = {
   }
 }
 ```
-* Now your done!
+* Now you're done!
 
 ## Adding Featured Problems
 
