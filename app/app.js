@@ -38,6 +38,11 @@ firebase.auth().onAuthStateChanged(function(user) {
     username = user.displayName;
     $("#profile").text(username);
     $("#cover").fadeOut(250);
+    var version = firebase.database().ref('/version');
+    version.once('value').then(function(snapshot){
+      if(snapshot.val() > window.settings["version"])
+        window.location = "invalidversion.html";
+    });
     var addedRef = firebase.database().ref('/users/' + usr.uid + "/added_problems");
     addedRef.once('value').then(function(snapshot) {
       for(value in snapshot.val()){

@@ -2,24 +2,6 @@
 const electron = require('electron');
 const app = electron.app; // Module to control application life.
 const BrowserWindow = electron.BrowserWindow; // Module to create native browser window.
-const {Menu} = require('electron')
-var template = [
-  {
-    label: 'RHS CS-Points',
-    submenu: [
-      {
-        label: 'Made by some kids in Reedy High School',
-      },
-      {
-        type: 'separator'
-      },
-    ]
-  },
-];
-var menu = Menu.buildFromTemplate(template);
-Menu.setApplicationMenu(menu);
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
 
@@ -46,7 +28,9 @@ app.on('ready', function() {
         title: "RHS CS-Points",
         backgroundColor: '#f76800'
     });
-
+    mainWindow.webContents.on("devtools-opened", () => {
+        mainWindow.webContents.closeDevTools();
+    });
     // and load the index.html of the app.
     mainWindow.loadURL('file://' + __dirname + '/index.html');
     // Open the DevTools.

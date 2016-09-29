@@ -6,5 +6,5 @@ window.settings = {
     databaseURL: "https://XXXXXXXXXXXXXXXXX.firebaseio.com",
     storageBucket: "XXXXXXXXXXXXXXXXXX.appspot.com",
   },
-
+  version: 1
 }
